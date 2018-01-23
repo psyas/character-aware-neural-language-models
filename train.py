@@ -40,6 +40,8 @@ flags.DEFINE_integer('batch_size', 20, 'number of sequences to train on in paral
 flags.DEFINE_integer('max_epochs', 25, 'number of full passes through the training data')
 flags.DEFINE_float('max_grad_norm', 5.0, 'normalize gradients at')
 flags.DEFINE_integer('max_word_length', 30, 'maximum word length')  # TODO : 특수문자가 많이 포함되기 때문에, word 단위가 적절한지 고민해야 함.
+flags.DEFINE_integer('word_shift_length', 10, 'num of characters to shift')
+flags.DEFINE_integer('num_valid_appear', 3, 'assignee  who appears under num_valid_appear will be ignored')
 
 # bookkeeping
 flags.DEFINE_integer('seed', 3435, 'random number generator seed')

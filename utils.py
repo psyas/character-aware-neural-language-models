@@ -5,9 +5,12 @@ import json
 import math
 import random
 import numpy as np
+import train.FLAGS
 from concurrent import futures
-
-
+## 박상영 코드 변경###############################
+class OverlapLengthException(Exception):
+    pass
+##################################################
 class BatchGenerator:
     def __init__(self, source_dir, batch_size, max_word_length, answer_key="assignee", sentence_limit=5000, num_valid=100, threshold=0):
         self.source = source_dir
@@ -21,7 +24,12 @@ class BatchGenerator:
         unique_chars = set()
         for item in self.train_data:
             unique_chars.update(item[1])
-        self.chars_dict = {i: x for x, i in enumerate(unique_chars)}
+        ## 박상영 코드 변경##########################################
+        self.chars_dict['djfjdkfakdjs'] = 0
+        for i,x in enumerate(unique_chars):
+            self.chars_dict[x] = i+1
+        #############################################################
+        #self.chars_dict = {i: x for x, i in enumerate(unique_chars)}
         random.shuffle(self.train_data)
         self.valid_data = self.train_data[:num_valid]
         del self.train_data[:num_valid]
@@ -89,3 +97,20 @@ class BatchGenerator:
 
     def read_json(self):
         return [os.path.join(path, file_name) for (path, _, files) in os.walk(self.source) for file_name in files if file_name[-4:] == "json"]
+    ## 박상영 코드 변경#############################################################################################
+    def strSplit(target_str, max_word_length, overlap_length, sentence_limit):
+        if max_word_length <= overlap_length:
+            raise OverlapLengthException('max_word_length has to be longer than overlap_length')
+
+        result = list()
+
+        while (len(target_str) - max_word_length) % (max_word_length - overlap_length) != 0:
+            target_str = target_str + '0'
+
+        loop_range = int((len(target_str) - max_word_length) / (max_word_length - overlap_length))
+        temp = list()
+        for i in range(loop_range + 1):
+            result.append(list(target_str[i * (max_word_length - overlap_length) : i * (max_word_length - overlap_length) + max_word_length]))
+
+        return np.asarray(result)
+    ################################################################################################################
